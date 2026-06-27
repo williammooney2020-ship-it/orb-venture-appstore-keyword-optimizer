@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>App Store Keyword Optimizer — iOS ASO Keyword Tool</title>
+<meta name="description" content="Optimize your App Store keyword field in seconds. Check character limits, spot duplicates, find missing terms from your description, and get ranked keyword suggestions. Free." />
+<link rel="canonical" href="https://appstore-keyword-optimizer.vercel.app/" />
+<meta property="og:title" content="App Store Keyword Optimizer — iOS ASO" />
+<meta property="og:description" content="Free ASO keyword tool for iOS developers. Audit your 100-char keyword field, spot duplicates, and mine your description for missing terms." />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"App Store Keyword Optimizer","url":"https://appstore-keyword-optimizer.vercel.app/","description":"Optimize your App Store keyword field. Checks limits, duplicates, and suggests keywords from your app description. Free, browser-based.","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<style>
+  :root{
+    --bg:#0b0c10;--panel:#15171f;--panel2:#1c1f2a;--ink:#eef1f7;--muted:#9aa3b5;
+    --line:#262a36;--accent:#5b8cff;--ok:#34d399;--warn:#fbbf24;--err:#f87171;
+    --radius:14px;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--ink);background:radial-gradient(1100px 600px at 30% -10%,#1a1040 0,transparent 55%),var(--bg)}
+  header{padding:42px 22px 10px;max-width:960px;margin:0 auto}
+  .badge{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);
+    border:1px solid var(--line);padding:5px 11px;border-radius:999px;background:var(--panel)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+  h1{font-size:30px;margin:16px 0 6px;letter-spacing:-.4px}
+  h1 span{color:var(--accent)}
+  .sub{color:var(--muted);max-width:600px}
+  main{max-width:960px;margin:18px auto 60px;padding:0 22px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:700px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:18px}
+  h2{font-size:15px;font-weight:700;margin:0 0 14px}
+  label{display:block;font-size:12px;color:var(--muted);margin:12px 0 5px;font-weight:600;letter-spacing:.2px;text-transform:uppercase}
+  label:first-of-type{margin-top:0}
+  input[type=text],textarea{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+    border-radius:9px;padding:10px 12px;font:inherit;outline:none}
+  input:focus,textarea:focus{border-color:var(--accent)}
+  textarea{resize:vertical}
+  .char-bar-wrap{margin-top:6px}
+  .char-bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:4px}
+  .char-fill{height:100%;border-radius:3px;transition:width .2s,background .2s}
+  .char-count{font-size:12px;color:var(--muted)}
+  button.primary{cursor:pointer;border:0;border-radius:10px;padding:13px;font:inherit;font-weight:650;
+    background:linear-gradient(180deg,#6b97ff,#4a78ff);color:#fff;width:100%;font-size:15px;margin-top:6px}
+  button.primary:active{transform:translateY(1px)}
+  #output{display:none}
+  #output.visible{display:block}
+  .result-section{margin-bottom:22px}
+  .result-section h3{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:0 0 10px}
+  .tag-row{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;font-size:13px;border:1px solid}
+  .tag.ok{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.3);color:var(--ok)}
+  .tag.warn{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3);color:var(--warn)}
+  .tag.err{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.3);color:var(--err)}
+  .tag.suggestion{background:rgba(91,140,255,.08);border-color:rgba(91,140,255,.3);color:var(--accent);cursor:pointer}
+  .tag.suggestion:hover{background:rgba(91,140,255,.18)}
+  .issue-list{list-style:none;padding:0;margin:0}
+  .issue-list li{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  .issue-list li:last-child{border-bottom:none}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;flex:none;margin-top:2px}
+  .pill.warn{background:rgba(251,191,36,.15);color:var(--warn)}
+  .pill.err{background:rgba(248,113,113,.15);color:var(--err)}
+  .pill.ok{background:rgba(52,211,153,.15);color:var(--ok)}
+  .optimized-box{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;font:13px/1.7 var(--mono);word-break:break-all}
+  .copy-btn{cursor:pointer;border:1px solid var(--line);border-radius:7px;padding:6px 13px;
+    font:12px/1 inherit;font-weight:600;background:var(--panel2);color:var(--ink);margin-top:8px}
+  .copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .tip-box{background:linear-gradient(135deg,#1a2035 0%,#141825 100%);border:1px solid #2a304a;
+    border-radius:14px;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:4px}
+  footer{max-width:960px;margin:0 auto;padding:0 22px 50px;color:#6b7385;font-size:12.5px}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <span class="badge"><span class="dot"></span>Free · browser-only · nothing uploaded</span>
+  <h1>App Store <span>Keyword Optimizer</span></h1>
+  <p class="sub">Paste your keyword field and app description — get a ranked, deduplicated, 100-character keyword string back in seconds.</p>
+</header>
+<main>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>1. Your Keywords</h2>
+        <label>Keyword field (comma-separated, max 100 chars)</label>
+        <input id="keywords" type="text" placeholder="habit,tracker,daily,streak,goals,routine" oninput="updateCharBar()" />
+        <div class="char-bar-wrap">
+          <div class="char-bar"><div class="char-fill" id="kwFill" style="width:0%;background:var(--ok)"></div></div>
+          <span class="char-count"><span id="kwCount">0</span> / 100 characters</span>
+        </div>
+        <label style="margin-top:14px">App name & subtitle (optional)</label>
+        <input id="appTitle" type="text" placeholder="Lumina — Daily Habit Tracker · Build Better Habits" />
+        <p style="font-size:12px;color:var(--muted);margin:6px 0 0">Terms already in your name/subtitle don't need to be in keywords.</p>
+      </div>
+      <div class="card">
+        <h2>2. App Description</h2>
+        <label>Paste your full description</label>
+        <textarea id="description" rows="7" placeholder="Paste your App Store description here to discover keywords you're missing from your current keyword field..."></textarea>
+      </div>
+      <button class="primary" onclick="optimize()">Optimize Keywords →</button>
+    </div>
+
+    <div id="output">
+      <div class="card result-section">
+        <h3>Issues Found</h3>
+        <ul class="issue-list" id="issueList"></ul>
+      </div>
+      <div class="card result-section">
+        <h3>Optimized Keyword String</h3>
+        <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">Duplicates removed, sorted by estimated search value, trimmed to 100 chars.</p>
+        <div class="optimized-box" id="optimizedBox"></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+          <button class="copy-btn" onclick="copyOptimized()">Copy</button>
+          <span style="font-size:12px;color:var(--muted)" id="optimizedCount"></span>
+        </div>
+      </div>
+      <div class="card result-section" id="suggestSection">
+        <h3>Missing Keywords from Description</h3>
+        <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">Click any term to add it to your keyword field.</p>
+        <div class="tag-row" id="suggestTags"></div>
+      </div>
+      <div class="tip-box">
+        <div>
+          <div style="font-weight:700;font-size:15px;margin-bottom:4px">✦ Support Orb Intelligence</div>
+          <div style="color:#9aa3b5;font-size:13px">One-person indie studio. Keeping these free takes time.</div>
+        </div>
+        <a href="https://buy.stripe.com/4gM28t2xG3SngLvbiY6wE01" target="_blank" rel="noopener"
+          style="display:inline-block;background:linear-gradient(180deg,#6b97ff,#4a78ff);color:#fff;font-weight:650;font-size:14px;padding:10px 22px;border-radius:9px;text-decoration:none;white-space:nowrap;flex:none">
+          Tip · $9.90
+        </a>
+      </div>
+    </div>
+  </div>
+
+</main>
+<footer>
+  Built by <b>Orb Intelligence</b>. Keyword suggestions are derived from your description text — they are not sourced from App Store search volume data.
+  Always validate keyword performance with your own ASO analytics.
+  <br><br>
+  More free tools:
+  <a href="https://appstore-metadata-auditor.vercel.app/" rel="noopener">Metadata Auditor</a> ·
+  <a href="https://ios-privacy-policy-generator.vercel.app/" rel="noopener">Privacy Policy Generator</a> ·
+  <a href="https://ios-app-review-generator.vercel.app/" rel="noopener">Review Responder</a> ·
+  <a href="https://appstore-screenshot-generator-theta.vercel.app/" rel="noopener">Screenshot Generator</a>
+</footer>
+<script src="optimizer.js"></script>
+<script>
+function updateCharBar() {
+  const v = document.getElementById("keywords").value;
+  const n = v.length;
+  const pct = Math.min(100, (n / 100) * 100);
+  const fill = document.getElementById("kwFill");
+  fill.style.width = pct + "%";
+  fill.style.background = n > 100 ? "var(--err)" : n > 90 ? "var(--warn)" : "var(--ok)";
+  document.getElementById("kwCount").textContent = n;
+}
+function copyOptimized() {
+  const text = document.getElementById("optimizedBox").textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const b = document.querySelector(".copy-btn");
+    const orig = b.textContent;
+    b.textContent = "Copied!";
+    setTimeout(() => { b.textContent = orig; }, 1800);
+  });
+}
+</script>
+</body>
+</html>
